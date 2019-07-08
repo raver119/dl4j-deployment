@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  dl4j-fetcher:
+    image: dl4j-deployment-fetcher:1.0.0
+    container_name: fetcher
+    hostname: fetcher
+    ports:
+      - "18080:8080"
+    networks:
+      base-network:
+        ipv4_address: 10.5.0.2
+    volumes:
+      - /dev/shm:/dev/shm
+  dl4j-processor:
+    image: dl4j-deployment-processor:1.0.0
+    container_name: processor
+    hostname: processor
+    networks:
+      base-network:
+        ipv4_address: 10.5.0.3
+    volumes:
+      - /dev/shm:/dev/shm
+networks:
+  base-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.5.0.0/16

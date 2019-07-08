@@ -14,4 +14,4 @@ This toy project shows how to build production-like environment with Apache Kafk
 ###Build instructions:
 - `cd docker`
 - `./build-docker-containers.sh`
-- `docker-compuse build -f kafka-dl4j-classifier.yml`
+- `docker-compuse -f ./dl4j-classifier-cluster.yml up`
