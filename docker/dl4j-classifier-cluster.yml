@@ -16,6 +16,7 @@ services:
       - "9092:9092"
       - "32772:32772"
     environment:
+      KAFKA_CREATE_TOPICS: "addresses:1:1,content:1:1,classified:1:1"
       KAFKA_ADVERTISED_HOST_NAME: 10.5.0.5
       KAFKA_ZOOKEEPER_CONNECT: 10.5.0.4:2181
     networks:
