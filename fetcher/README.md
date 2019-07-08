@@ -1,0 +1,1 @@
+This module provides HTTP-fetcher functionality for URLs coming either from Apache Kafka stream or REST API request

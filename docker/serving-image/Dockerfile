@@ -1,0 +1,1 @@
+FROM dl4j-deployment-base:1.0.0 as builder

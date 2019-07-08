@@ -1,0 +1,1 @@
+This module is responsible for the sentiment classification of the text context, coming out of corresponding Apache Kafka stream.
