@@ -1,5 +1,28 @@
 version: "3.7"
 services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      base-network:
+        ipv4_address: 10.5.0.4
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+      - "32772:32772"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 10.5.0.5
+      KAFKA_ZOOKEEPER_CONNECT: 10.5.0.4:2181
+    networks:
+      base-network:
+        ipv4_address: 10.5.0.5
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   dl4j-fetcher:
     image: dl4j-deployment-fetcher:1.0.0
     container_name: fetcher
