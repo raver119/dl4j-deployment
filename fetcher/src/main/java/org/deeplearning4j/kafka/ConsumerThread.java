@@ -3,14 +3,18 @@ package org.deeplearning4j.kafka;
 import kong.unirest.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import lombok.var;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.IntegerDeserializer;
+import org.apache.kafka.common.serialization.IntegerSerializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.deeplearning4j.classes.ContentType;
 import org.deeplearning4j.classes.WebContent;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Properties;
 
 @Slf4j
@@ -31,11 +35,15 @@ public class ConsumerThread extends Thread implements Runnable {
 
         val properties = new Properties();
         properties.put("bootstrap.servers", BOOTSTRAP_SERVERS);
+        properties.put("group.id", "fetcherPod");
         properties.put("acks", "all");
         properties.put("retries", 0);
 
-        val consumer = new KafkaConsumer<Integer, String>(properties);
-        val producer = new KafkaProducer<Integer, WebContent>(properties);
+        val consumer = new KafkaConsumer<Integer, String>(properties, new IntegerDeserializer(), new StringDeserializer());
+        val producer = new KafkaProducer<Integer, WebContent>(properties, new IntegerSerializer(), new WebContent.Serializer());
+
+        // pew-pew
+        consumer.subscribe(Collections.singleton(TOPIC_IN));
 
         while (true) {
             // fetch addresses from Kafka
@@ -55,10 +63,20 @@ public class ConsumerThread extends Thread implements Runnable {
                 list.parallelStream().forEach(u -> {
                     try {
                         var res = Unirest.get(u).asString().getBody();
+
+                        // Ugly, but works for toy example
+                        if (!res.contains("RSS")) {
+                            log.info("Not an RSS feed");
+                            return;
+                        }
+
                         val wc = WebContent.builder()
+                                .type(ContentType.TEXT)
                                 .content(res)
                                 .sourceURL(u)
                                 .build();
+
+                        log.info("Successfully fetched content from [{}]", u);
 
                         producer.send(new ProducerRecord<>(TOPIC_OUT, wc.hashCode(), wc));
                     } catch (Exception e) {
