@@ -50,6 +50,20 @@ services:
       - /dev/shm:/dev/shm
     depends_on:
       - "kafka"
+      - "dl4j-serving-text"
+  dl4j-serving-text:
+    image: dl4j-deployment-model-text:1.0.0
+    container_name: serving-text
+    hostname: serving-text
+    ports:
+      - "8081:8081"
+    networks:
+      base-network:
+        ipv4_address: 10.5.0.10
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - "kafka"
 networks:
   base-network:
     driver: bridge

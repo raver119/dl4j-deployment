@@ -12,6 +12,7 @@
         <module>fetcher</module>
         <module>processor</module>
         <module>common</module>
+        <module>serving-text</module>
     </modules>
 
 
