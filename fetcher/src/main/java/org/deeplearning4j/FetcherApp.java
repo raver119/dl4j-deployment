@@ -2,7 +2,7 @@ package org.deeplearning4j;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.deeplearning4j.kafka.ConsumerThread;
+import org.deeplearning4j.kafka.FetcherConsumerThread;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
@@ -32,7 +32,7 @@ public class FetcherApp
         server.start();
 
         // start Kafka consumer
-        val consumerThread = new ConsumerThread();
+        val consumerThread = new FetcherConsumerThread();
         consumerThread.start();
 
         // run till the end of eternity

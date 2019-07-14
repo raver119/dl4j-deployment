@@ -18,12 +18,12 @@ import java.util.Collections;
 import java.util.Properties;
 
 @Slf4j
-public class ConsumerThread extends Thread implements Runnable {
+public class FetcherConsumerThread extends Thread implements Runnable {
     private final static String TOPIC_IN = "addresses";
     private final static String TOPIC_OUT = "content";
     private final static String BOOTSTRAP_SERVERS = "10.5.0.5:9092";
 
-    public ConsumerThread() {
+    public FetcherConsumerThread() {
         super();
 
         setDaemon(true);
