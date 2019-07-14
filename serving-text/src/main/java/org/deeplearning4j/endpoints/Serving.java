@@ -16,8 +16,13 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class Serving {
 
-    @GET
-    @Path("address")
+    /**
+     * This endpoint takes JSON representation of WebContent, passes into to
+     * @param content
+     * @return
+     */
+    @POST
+    @Path("text")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public Response processAddress(@NonNull WebContent content) {

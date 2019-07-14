@@ -1,5 +1,6 @@
 package org.deeplearning4j.kafka;
 
+import kong.unirest.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -9,6 +10,7 @@ import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.deeplearning4j.classes.ContentType;
+import org.deeplearning4j.classes.Sentiment;
 import org.deeplearning4j.classes.WebContent;
 
 import java.time.Duration;
@@ -18,6 +20,8 @@ import java.util.Properties;
 
 @Slf4j
 public class ProcessorConsumerThread extends Thread implements Runnable {
+    private final static String TEXT_MODEL_API = "http://serving-text:8081/serving/text";
+
     private final static String TOPIC_IN = "content";
     private final static String TOPIC_OUT = "classified";
     private final static String BOOTSTRAP_SERVERS = "10.5.0.5:9092";
@@ -61,7 +65,17 @@ public class ProcessorConsumerThread extends Thread implements Runnable {
                 // now we'll query neural network for each text we have
                 list.forEach(u -> {
                     try {
-                        //
+                        // sending request to the model server
+                        val response = Unirest.post(TEXT_MODEL_API).header("Content-Type", "application/json")
+                                .body(u).asString().getBody();
+
+                        val sentiment = Sentiment.valueOf(response);
+
+                        // update object
+                        u.setSentiment(sentiment);
+
+                        // send it to classified queue
+                        producer.send(new ProducerRecord<>(TOPIC_OUT, u.hashCode(), u));
                     } catch (Exception e) {
                         log.error("Failed to process URL: [" + u.getSourceURL() + "]", e);
                     }
