@@ -26,8 +26,8 @@ public class Serving {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public Response processAddress(@NonNull WebContent content) {
-        val sentiment = ModelHolder.getInstance().evaluateSentiment(content.getContent());
+        val topic = ModelHolder.getInstance().evaluateTopic(content.getContent());
 
-        return Response.ok(sentiment).build();
+        return Response.ok(topic).build();
     }
 }
