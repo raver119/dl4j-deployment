@@ -19,6 +19,8 @@ services:
       KAFKA_CREATE_TOPICS: "addresses:1:1,content:1:1,classified:1:1"
       KAFKA_ADVERTISED_HOST_NAME: 10.5.0.5
       KAFKA_ZOOKEEPER_CONNECT: 10.5.0.4:2181
+    depends_on:
+      - "zookeeper"
     networks:
       base-network:
         ipv4_address: 10.5.0.5
@@ -35,6 +37,8 @@ services:
         ipv4_address: 10.5.0.2
     volumes:
       - /dev/shm:/dev/shm
+    depends_on:
+      - "kafka"
   dl4j-processor:
     image: dl4j-deployment-processor:1.0.0
     container_name: processor
@@ -44,6 +48,22 @@ services:
         ipv4_address: 10.5.0.3
     volumes:
       - /dev/shm:/dev/shm
+    depends_on:
+      - "kafka"
+      - "dl4j-serving-text"
+  dl4j-serving-text:
+    image: dl4j-deployment-model-text:1.0.0
+    container_name: serving-text
+    hostname: serving-text
+    ports:
+      - "8081:8081"
+    networks:
+      base-network:
+        ipv4_address: 10.5.0.10
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - "kafka"
 networks:
   base-network:
     driver: bridge
